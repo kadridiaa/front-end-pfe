@@ -11,18 +11,28 @@ import Contact from "./pages/Contact";
 
 function App() {
   return (
-    <div className="App">
-      <Router>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/shop" element={<Shop />} />
-          <Route path="/blog" element={<Blog />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-        </Routes>
-      </Router>
+    // <div className="App">
+    //   <Router>
+    //     <Navbar />
+    //     <Routes>
+    //       <Route path="/" element={<Home />} />
+    //       <Route path="/shop" element={<Shop />} />
+    //       <Route path="/blog" element={<Blog />} />
+    //       <Route path="/about" element={<About />} />
+    //       <Route path="/contact" element={<Contact />} />
+    //     </Routes>
+    //   </Router>
+    // </div>
+
+    <Router>
+    <div>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Home />} /> {/* Page Home par défaut */}
+        {/* Ajoutez d'autres routes pour d'autres pages si nécessaire */}
+      </Routes>
     </div>
+  </Router>
   );
 }
 
