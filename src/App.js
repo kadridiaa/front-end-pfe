@@ -8,6 +8,7 @@ import Shop from "./pages/Shop";
 import Blog from "./pages/Blog";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+import Condition from "./pages/Condition";
 
 function App() {
   return (
@@ -16,7 +17,7 @@ function App() {
     //     <Navbar />
     //     <Routes>
     //       <Route path="/" element={<Home />} />
-    //       <Route path="/shop" element={<Shop />} />
+    //
     //       <Route path="/blog" element={<Blog />} />
     //       <Route path="/about" element={<About />} />
     //       <Route path="/contact" element={<Contact />} />
@@ -25,14 +26,16 @@ function App() {
     // </div>
 
     <Router>
-    <div>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} /> {/* Page Home par défaut */}
-        {/* Ajoutez d'autres routes pour d'autres pages si nécessaire */}
-      </Routes>
-    </div>
-  </Router>
+      <div>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Home />} /> {/* Page Home par défaut */}
+          {/* Ajoutez d'autres routes pour d'autres pages si nécessaire */}
+          <Route path="/shop" element={<Shop />} />
+          <Route path="/Condition" element={<Condition />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
