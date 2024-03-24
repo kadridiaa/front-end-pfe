@@ -9,6 +9,7 @@ import { FaInstagram, FaFacebook } from "react-icons/fa";
 import { ImLinkedin } from "react-icons/im";
 import { MdOutlineMail } from "react-icons/md";
 import Login from "./Login";
+import {  Link } from 'react-router-dom';
 import logo from "../pictures/logo.png";
 
 function Navbar() {
@@ -112,7 +113,8 @@ function Navbar() {
         </div>
         {/* <div>{logo}</div> */}
         <div className="flex items-center gap-2">
-          <MdFavorite color="gray" size={26} />
+        <Link to="/Profile"><MdFavorite color="gray" size={26} /></Link>
+          
           <RiAccountCircleFill
             color="gray"
             size={26}

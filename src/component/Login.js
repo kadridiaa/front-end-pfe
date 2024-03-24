@@ -38,7 +38,7 @@ function Login({ onClose }) {
         <div className="md:w-1/2 pt-2  border-r-[1px] pr-6 border-gray-300 px-4">
           <button
             className="absolute top-2 right-2 text-white hover:text-gray-800"
-            onClick={onClose} // Close modal when exit button is clicked
+            onClick={onClose} 
           >
             Fermer
           </button>

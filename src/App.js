@@ -5,10 +5,10 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./component/Navbar";
 import Home from "./pages/Home";
 import Shop from "./pages/Shop";
-import Blog from "./pages/Blog";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Condition from "./pages/Condition";
+import Profile from "./pages/Profile";
 
 function App() {
   return (
@@ -33,6 +33,7 @@ function App() {
           {/* Ajoutez d'autres routes pour d'autres pages si nécessaire */}
           <Route path="/shop" element={<Shop />} />
           <Route path="/Condition" element={<Condition />} />
+          <Route path="/Profile" element={<Profile />} />
         </Routes>
       </div>
     </Router>
