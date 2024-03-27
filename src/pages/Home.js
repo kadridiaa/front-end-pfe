@@ -6,10 +6,13 @@ import { MdOutlineFavorite } from "react-icons/md";
 function Home() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [data, setData] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState("men");
+  const [hoveredId, setHoveredId] = useState(null);
 
   const toggleFilter = () => {
     setIsFilterOpen(!isFilterOpen);
   };
+
   const toggleFavorite = (productId) => {
     setData((prevData) =>
       prevData.map((item) =>
@@ -19,7 +22,6 @@ function Home() {
       )
     );
   };
-  const [hoveredId, setHoveredId] = useState(null);
 
   const handleMouseEnter = (id) => {
     setHoveredId(id);
@@ -28,17 +30,24 @@ function Home() {
   const handleMouseLeave = () => {
     setHoveredId(null);
   };
+
+  const fetchProducts = async (category) => {
+    try {
+      const response = await axios.get(`http://localhost:3001/trier/${category}`);
+      setData(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
   useEffect(() => {
-    axios
-      .get("http://localhost:3001/products")
-      .then((response) => {
-        setData(response.data);
-        console.log(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  }, []);
+    fetchProducts(selectedCategory);
+  }, [selectedCategory]);
+
+  const handleCategoryClick = (category) => {
+    setSelectedCategory(category);
+  };
 
   return (
     <div className="h-screen flex flex-col overflow-y-scroll">
@@ -96,15 +105,17 @@ function Home() {
               </h2>
               <div className="border-b-2 border-gray-400 w-10 mt-1"></div>
               <ul className="mt-2 text-gray-500">
-                <li className="flex text-center  items-center justify-between py-2">
+                <li className="flex text-center cursor-pointer items-center justify-between py-2" onClick={() => handleCategoryClick("men")}>
                   <p>Homme</p>
                   <p className="text-[11px] pt-2">(999)</p>
                 </li>
-                <li className="flex text-center items-center justify-between py-2">
+                <li className="flex text-center items-center cursor-pointer  justify-between py-2"
+                onClick={() => handleCategoryClick("women")}>
                   <p>Femme</p>
                   <p className="text-[11px] pt-2">(999)</p>
                 </li>
-                <li className="flex text-center items-center justify-between py-2">
+                <li className="flex text-center items-center cursor-pointer justify-between py-2 "
+                onClick={() => handleCategoryClick("children")}>
                   <p>Enfant</p>
                   <p className="text-[11px] pt-2">(999)</p>
                 </li>
@@ -197,7 +208,7 @@ function Home() {
             </div>
           </div>
         </div>
-        <div className=" flex items-center justify-center m-4 ">
+        <div className="flex items-center justify-center m-4 ">
           <div className="hidden lg:flex pr-4">
             <h1 className="text-gray-500">
               Affichage de 1–20 sur 1399 résultats
@@ -227,15 +238,24 @@ function Home() {
               </h2>
               <div className="border-b-2 border-gray-400 w-10 mt-1"></div>
               <ul className="mt-2 text-gray-500">
-                <li className="flex text-center  items-center justify-between py-2">
+                <li
+                  className="flex text-center cursor-pointer items-center justify-between py-2"
+                  onClick={() => handleCategoryClick("men")}
+                >
                   <p>Homme</p>
                   <p className="text-[11px] pt-2">(999)</p>
                 </li>
-                <li className="flex text-center items-center justify-between py-2">
+                <li
+                  className="flex text-center cursor-pointer items-center justify-between py-2"
+                  onClick={() => handleCategoryClick("women")}
+                >
                   <p>Femme</p>
                   <p className="text-[11px] pt-2">(999)</p>
                 </li>
-                <li className="flex text-center items-center justify-between py-2">
+                <li
+                  className="flex text-center cursor-pointer items-center justify-between py-2"
+                  onClick={() => handleCategoryClick("children")}
+                >
                   <p>Enfant</p>
                   <p className="text-[11px] pt-2">(999)</p>
                 </li>
@@ -329,38 +349,37 @@ function Home() {
           </div>
 
           <div className="m-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {data &&
-        data.map((prd) => (
-          <div key={prd.product_id} className="">
-            <a href={prd.link}>
-              <div
-                className=""
-                onMouseEnter={() => handleMouseEnter(prd.product_id)}
-                onMouseLeave={handleMouseLeave}
-              >
-                <img src={prd.img} alt="" />
-                
-              </div>
-            </a>
-            <div className="flex flex-col items-start px-2">
-              <h1 className="text-gray-400 text-[14px]">
-                {prd.sectionName}
-              </h1>
-              <h1 className="text-[14px] overflow-hidden whitespace-nowrap overflow-ellipsis w-[200px]">
-                {prd.name}
-              </h1>
-              <div className="flex items-center justify-between w-full">
-                <h1 className="text-[14px]">{prd.price} DA</h1>
-                <button onClick={() => toggleFavorite(prd.product_id)}>
-                  <MdOutlineFavorite
-                    color={prd.isFavorite ? "red" : "gray"}
-                    size={24}
-                  />
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
+            {data &&
+              data.map((prd) => (
+                <div key={prd.product_id} className="">
+                  <a href={prd.link}>
+                    <div
+                      className=""
+                      onMouseEnter={() => handleMouseEnter(prd.product_id)}
+                      onMouseLeave={handleMouseLeave}
+                    >
+                      <img src={prd.img} alt="" />
+                    </div>
+                  </a>
+                  <div className="flex flex-col items-start px-2">
+                    <h1 className="text-gray-400 text-[14px]">
+                      {prd.sectionName}
+                    </h1>
+                    <h1 className="text-[14px] overflow-hidden whitespace-nowrap overflow-ellipsis w-[200px]">
+                      {prd.name}
+                    </h1>
+                    <div className="flex items-center justify-between w-full">
+                      <h1 className="text-[14px]">{prd.price} DA</h1>
+                      <button onClick={() => toggleFavorite(prd.product_id)}>
+                        <MdOutlineFavorite
+                          color={prd.isFavorite ? "red" : "gray"}
+                          size={24}
+                        />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
           </div>
         </div>
       </div>

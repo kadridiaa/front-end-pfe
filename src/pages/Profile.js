@@ -1,15 +1,24 @@
 import React, { useState } from "react";
-import Dashboard from "../component/Dashboard"; // Importez votre composant Dashboard
+import Dashboard from "../component/Dashboard";
 import Addresses from "../component/Addresses";
 import AccountDetails from "../component/AccountDetails";
 import WishList from "../component/WishList";
 import { FaUserCircle } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
 function Profile() {
   const [selectedItem, setSelectedItem] = useState("TABLEAU DE BORD");
+  const navigate = useNavigate();
 
   const handleItemClick = (itemName) => {
     setSelectedItem(itemName);
+    if (itemName === "DECONNEXION") {
+      // Remove authToken cookie to logout
+      Cookies.remove("authToken");
+      // Redirect to login page
+      navigate("/");
+    }
   };
 
   return (
@@ -102,7 +111,6 @@ function Profile() {
           {selectedItem === "ADRESSES" && <Addresses />}
           {selectedItem === "DETAILS DU COMPTE" && <AccountDetails />}
           {selectedItem === "WISHLIST" && <WishList />}
-         
         </div>
       </div>
     </div>

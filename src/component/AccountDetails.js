@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+import React, { useState , useEffect } from "react";
+import axios from 'axios';
+import Cookies from "js-cookie";
+
 
 function AccountDetails() {
   // Define state variables
@@ -20,6 +23,28 @@ function AccountDetails() {
       [name]: checked,
     }));
   };
+
+
+  const [userData, setUserData] = useState(null);
+
+  useEffect(() => {
+    // Retrieve user ID from cookies or global state
+
+   
+    const userId = Cookies.get("authToken"); // Assuming you store the user ID in a cookie
+    console.log(userId);
+    if (userId) {
+      // Make a request to fetch user data using the user ID
+      axios.get(`http://localhost:3001/users/${userId}`)
+      .then(response => {
+        // Set user data in state
+        setUserData(response.data);
+      })
+      .catch(error => {
+        console.error("Error fetching user data:", error);
+      });
+    }
+  }, []);
 
   return (
     <div className="w-full m-2 mt-4">

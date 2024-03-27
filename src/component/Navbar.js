@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState , useEffect } from "react";
 import { RiAccountCircleFill } from "react-icons/ri";
 import { MdFavorite } from "react-icons/md";
 import { IoMdMenu } from "react-icons/io";
@@ -10,12 +10,13 @@ import { ImLinkedin } from "react-icons/im";
 import { MdOutlineMail } from "react-icons/md";
 import Login from "./Login";
 import {  Link } from 'react-router-dom';
-import logo from "../pictures/logo.png";
+import Cookies from "js-cookie";
 
 function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -27,6 +28,11 @@ function Navbar() {
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
   };
+  useEffect(() => {
+    // Check if the user is logged in when the component mounts
+    const authToken = Cookies.get("authToken");
+    setIsLoggedIn(!!authToken); // Set isLoggedIn based on the presence of authToken
+  }, []);
 
   return (
     <div>
@@ -115,16 +121,28 @@ function Navbar() {
         <div className="flex items-center gap-2">
         <Link to="/Profile"><MdFavorite color="gray" size={26} /></Link>
           
-          <RiAccountCircleFill
-            color="gray"
-            size={26}
-            onClick={toggleModal}
-            className="cursor-pointer"
-          />
+        {isLoggedIn ? (
+        <div className="flex items-center gap-2">
+          <Link to="/profile">
+            <RiAccountCircleFill
+              color="gray"
+              size={26}
+              className="cursor-pointer"
+            />
+          </Link>
+        </div>
+      ) : (
+        <RiAccountCircleFill
+          color="gray"
+          size={26}
+          className="cursor-pointer"
+          onClick={toggleModal}
+        />
+      )}
           <IoIosNotifications color="gray" size={26} />
         </div>
       </div>
-      {isModalOpen && <Login onClose={toggleModal} />}
+      {isModalOpen && !isLoggedIn && <Login onClose={toggleModal} />}
       <div
         className={`bg-white fixed top-0 left-0 h-screen shadow-2xl w-[68%] z-30 ${
           isMenuOpen
@@ -151,9 +169,9 @@ function Navbar() {
             <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2">
               ENFANT
             </li>
-            <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2">
+           <Link to="/"> <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2">
               BOUTIQUE
-            </li>
+            </li></Link>
             <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2">
               A PROPOS
             </li>
@@ -163,9 +181,10 @@ function Navbar() {
       </div>
       <div className="bg-gray-300 bg-opacity-50 flex h-12">
         <ul className="hidden lg:flex justify-center w-full gap-6 text-gray-500">
-          <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2 cursor-pointer">
+          
+         <Link to='/'> <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2 cursor-pointer">
             BOUTIQUE
-          </li>
+          </li></Link>
           <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2 cursor-pointer">
             HOMME
           </li>
