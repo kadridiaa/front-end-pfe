@@ -64,24 +64,18 @@ function Login({ onClose }) {
         {
           email: formData1.email,
           password: formData1.password,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${Cookies.get("authToken")}`, // Use template literals to concatenate the token
-          },
         }
       );
-      // console.log(response.data)
-      console.log(response.data);
-      const { userId } = response.data;
+     
+      // Accéder à l'ID utilisateur depuis la réponse de l'API
+      const userId = response.data.user.id;
       console.log(userId);
-
-      // Handle successful login
-      Cookies.set("authToken", response.data.token, { expires: 7, path: "" });
-      //  Cookies.set("authToken", token, { expires: 7, path: "" });
+  
+      // Stocker l'ID utilisateur dans les cookies
       Cookies.set("id", userId, { expires: 7, path: "" });
-
-      // Redirect user to Profile page
+      Cookies.set("authToken", response.data.token, { expires: 7, path: "" });
+  
+      // Rediriger l'utilisateur vers la page de profil
       navigate("/profile");
     } catch (error) {
       console.error("Login error:", error);
