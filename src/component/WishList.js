@@ -6,7 +6,7 @@ function WishList() {
   const [data, setData] = useState();
   useEffect(() => {
     axios
-      .get("http://localhost:3001/products")
+      .get("")
       .then((response) => {
         setData(response.data);
       })

@@ -1,4 +1,4 @@
-import React, { useState , useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { RiAccountCircleFill } from "react-icons/ri";
 import { MdFavorite } from "react-icons/md";
 import { IoMdMenu } from "react-icons/io";
@@ -9,7 +9,7 @@ import { FaInstagram, FaFacebook } from "react-icons/fa";
 import { ImLinkedin } from "react-icons/im";
 import { MdOutlineMail } from "react-icons/md";
 import Login from "./Login";
-import {  Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 import Cookies from "js-cookie";
 
 function Navbar() {
@@ -17,9 +17,13 @@ function Navbar() {
   const [isHovered, setIsHovered] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isNotificationPanelOpen, setIsNotificationPanelOpen] = useState(false);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+  const toggleNotificationPanel = () => {
+    setIsNotificationPanelOpen(!isNotificationPanelOpen);
   };
 
   const handleHover = () => {
@@ -119,27 +123,46 @@ function Navbar() {
         </div>
         {/* <div>{logo}</div> */}
         <div className="flex items-center gap-2">
-        <Link to="/Profile"><MdFavorite color="gray" size={26} /></Link>
-          
-        {isLoggedIn ? (
-        <div className="flex items-center gap-2">
-          <Link to="/profile">
+          <Link to="/Profile">
+            <MdFavorite color="gray" size={26} />
+          </Link>
+
+          {isLoggedIn ? (
+            <div className="flex items-center gap-2">
+              <Link to="/profile">
+                <RiAccountCircleFill
+                  color="gray"
+                  size={26}
+                  className="cursor-pointer"
+                />
+              </Link>
+            </div>
+          ) : (
             <RiAccountCircleFill
               color="gray"
               size={26}
               className="cursor-pointer"
+              onClick={toggleModal}
             />
-          </Link>
-        </div>
-      ) : (
-        <RiAccountCircleFill
-          color="gray"
-          size={26}
-          className="cursor-pointer"
-          onClick={toggleModal}
-        />
-      )}
-          <IoIosNotifications color="gray" size={26} />
+          )}
+          <IoIosNotifications
+            color="gray"
+            size={26}
+            onClick={toggleNotificationPanel}
+          />
+         
+          {isNotificationPanelOpen && (
+            <div className="bg-black bg-opacity-50 fixed top-0 left-0 h-screen w-full z-10">
+            </div>
+          )}
+          <div
+            className={
+              isNotificationPanelOpen
+                ? "bg-red-600 bg-opacity-50 fixed top-0 left-0 h-screen w-full z-20 transition-opacity duration-500"
+                : ""
+            }
+            onClick={toggleNotificationPanel}
+          ></div>
         </div>
       </div>
       {isModalOpen && !isLoggedIn && <Login onClose={toggleModal} />}
@@ -169,9 +192,51 @@ function Navbar() {
             <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2">
               ENFANT
             </li>
-           <Link to="/"> <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2">
-              BOUTIQUE
-            </li></Link>
+            <Link to="/">
+              {" "}
+              <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2">
+                BOUTIQUE
+              </li>
+            </Link>
+            <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2">
+              A PROPOS
+            </li>
+            <li></li>
+          </ul>
+        </div>
+      </div>
+      <div
+        className={`bg-white fixed top-0 right-0 h-screen shadow-2xl w-[68%] lg:w-[28%] z-30 ${
+          isNotificationPanelOpen
+            ? "opacity-100 transition-opacity duration-500"
+            : "opacity-0 pointer-events-none"
+        }`}
+      >
+        <div>
+          <div className="flex justify-end m-4">
+            <button
+              className="text-gray-700 hover:text-gray-900"
+              onClick={toggleNotificationPanel}
+            >
+              <BiX size={24} />
+            </button>
+          </div>
+          <ul className="m-6 pt-10 text-gray-500 text-[15px] font-[500]">
+            <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2">
+              HOMME
+            </li>
+            <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2">
+              FEMME
+            </li>
+            <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2">
+              ENFANT
+            </li>
+            <Link to="/">
+              {" "}
+              <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2">
+                BOUTIQUE
+              </li>
+            </Link>
             <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2">
               A PROPOS
             </li>
@@ -181,10 +246,12 @@ function Navbar() {
       </div>
       <div className="bg-gray-300 bg-opacity-50 flex h-12">
         <ul className="hidden lg:flex justify-center w-full gap-6 text-gray-500">
-          
-         <Link to='/'> <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2 cursor-pointer">
-            BOUTIQUE
-          </li></Link>
+          <Link to="/">
+            {" "}
+            <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2 cursor-pointer">
+              BOUTIQUE
+            </li>
+          </Link>
           <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2 cursor-pointer">
             HOMME
           </li>

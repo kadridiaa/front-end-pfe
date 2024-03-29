@@ -2,26 +2,28 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { BiAbacus, BiX } from "react-icons/bi";
 import { MdOutlineFavorite } from "react-icons/md";
+import Cookies from "js-cookie";
 
 function Home() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [data, setData] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("men");
   const [hoveredId, setHoveredId] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const toggleFilter = () => {
     setIsFilterOpen(!isFilterOpen);
   };
 
-  const toggleFavorite = (productId) => {
-    setData((prevData) =>
-      prevData.map((item) =>
-        item.product_id === productId
-          ? { ...item, isFavorite: !item.isFavorite }
-          : item
-      )
-    );
-  };
+  // const toggleFavorite = (productId) => {
+  //   setData((prevData) =>
+  //     prevData.map((item) =>
+  //       item.product_id === productId
+  //         ? { ...item, isFavorite: !item.isFavorite }
+  //         : item
+  //     )
+  //   );
+  // };
 
   const handleMouseEnter = (id) => {
     setHoveredId(id);
@@ -33,7 +35,9 @@ function Home() {
 
   const fetchProducts = async (category) => {
     try {
-      const response = await axios.get(`http://localhost:3001/trier/${category}`);
+      const response = await axios.get(
+        `http://localhost:3001/trier/${category}`
+      );
       setData(response.data);
       console.log(response.data);
     } catch (error) {
@@ -49,8 +53,29 @@ function Home() {
     setSelectedCategory(category);
   };
 
+  useEffect(() => {
+    const authToken = Cookies.get("authToken");
+    setIsLoggedIn(!!authToken);
+  }, []);
+
+  const toggleFavorite = async (productId) => {
+    if (!isLoggedIn) {
+      console.log("Please log in to add to favorites");
+      return;
+    }
+    try {
+      const response = await axios.post("http://localhost:3001/favoris/", {
+        productId: productId,
+      });
+      console.log(response.data);
+      // Update UI to indicate that the product is favorited
+    } catch (error) {
+      console.error("Error adding to favorites:", error);
+    }
+  };
+
   return (
-    <div className="h-screen flex flex-col overflow-y-scroll">
+    <div className="h-screen flex flex-col ">
       <div
         className={
           isFilterOpen
@@ -105,17 +130,24 @@ function Home() {
               </h2>
               <div className="border-b-2 border-gray-400 w-10 mt-1"></div>
               <ul className="mt-2 text-gray-500">
-                <li className="flex text-center cursor-pointer items-center justify-between py-2" onClick={() => handleCategoryClick("men")}>
+                <li
+                  className="flex text-center cursor-pointer items-center justify-between py-2"
+                  onClick={() => handleCategoryClick("men")}
+                >
                   <p>Homme</p>
                   <p className="text-[11px] pt-2">(999)</p>
                 </li>
-                <li className="flex text-center items-center cursor-pointer  justify-between py-2"
-                onClick={() => handleCategoryClick("women")}>
+                <li
+                  className="flex text-center items-center cursor-pointer  justify-between py-2"
+                  onClick={() => handleCategoryClick("women")}
+                >
                   <p>Femme</p>
                   <p className="text-[11px] pt-2">(999)</p>
                 </li>
-                <li className="flex text-center items-center cursor-pointer justify-between py-2 "
-                onClick={() => handleCategoryClick("children")}>
+                <li
+                  className="flex text-center items-center cursor-pointer justify-between py-2 "
+                  onClick={() => handleCategoryClick("children")}
+                >
                   <p>Enfant</p>
                   <p className="text-[11px] pt-2">(999)</p>
                 </li>
