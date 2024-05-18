@@ -3,13 +3,21 @@ import axios from "axios";
 import { BiAbacus, BiX } from "react-icons/bi";
 import { MdOutlineFavorite } from "react-icons/md";
 import Cookies from "js-cookie";
+import { useLocation } from "react-router-dom";
+
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
 
 function Home() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [data, setData] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState("men");
+  const [selectedCategory, setSelectedCategory] = useState("man");
   const [hoveredId, setHoveredId] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  let query = useQuery();
+  let category = query.get("type");
+  
 
   const toggleFilter = () => {
     setIsFilterOpen(!isFilterOpen);
@@ -36,7 +44,7 @@ function Home() {
   const fetchProducts = async (category) => {
     try {
       const response = await axios.get(
-        `http://localhost:3001/trier/${category}`
+        `http://localhost:3001${category ? '/trier/'+ category : "/products"}`
       );
       setData(response.data);
       console.log(response.data);
@@ -44,14 +52,10 @@ function Home() {
       console.error("Error fetching data:", error);
     }
   };
-
+  
   useEffect(() => {
-    fetchProducts(selectedCategory);
-  }, [selectedCategory]);
-
-  const handleCategoryClick = (category) => {
-    setSelectedCategory(category);
-  };
+    fetchProducts(category);
+  }, [category]);
 
   useEffect(() => {
     const authToken = Cookies.get("authToken");
@@ -64,7 +68,7 @@ function Home() {
       return;
     }
     try {
-      const response = await axios.post("http://localhost:3001/favoris/", {
+      const response = await axios.post("http://localhost:3001/favoris", {
         productId: productId,
       });
       console.log(response.data);
@@ -130,24 +134,15 @@ function Home() {
               </h2>
               <div className="border-b-2 border-gray-400 w-10 mt-1"></div>
               <ul className="mt-2 text-gray-500">
-                <li
-                  className="flex text-center cursor-pointer items-center justify-between py-2"
-                  onClick={() => handleCategoryClick("men")}
-                >
+                <li className="flex text-center cursor-pointer items-center justify-between py-2">
                   <p>Homme</p>
                   <p className="text-[11px] pt-2">(999)</p>
                 </li>
-                <li
-                  className="flex text-center items-center cursor-pointer  justify-between py-2"
-                  onClick={() => handleCategoryClick("women")}
-                >
+                <li className="flex text-center items-center cursor-pointer  justify-between py-2">
                   <p>Femme</p>
                   <p className="text-[11px] pt-2">(999)</p>
                 </li>
-                <li
-                  className="flex text-center items-center cursor-pointer justify-between py-2 "
-                  onClick={() => handleCategoryClick("children")}
-                >
+                <li className="flex text-center items-center cursor-pointer justify-between py-2 ">
                   <p>Enfant</p>
                   <p className="text-[11px] pt-2">(999)</p>
                 </li>
@@ -270,24 +265,15 @@ function Home() {
               </h2>
               <div className="border-b-2 border-gray-400 w-10 mt-1"></div>
               <ul className="mt-2 text-gray-500">
-                <li
-                  className="flex text-center cursor-pointer items-center justify-between py-2"
-                  onClick={() => handleCategoryClick("men")}
-                >
+                <li className="flex text-center cursor-pointer items-center justify-between py-2">
                   <p>Homme</p>
                   <p className="text-[11px] pt-2">(999)</p>
                 </li>
-                <li
-                  className="flex text-center cursor-pointer items-center justify-between py-2"
-                  onClick={() => handleCategoryClick("women")}
-                >
+                <li className="flex text-center cursor-pointer items-center justify-between py-2">
                   <p>Femme</p>
                   <p className="text-[11px] pt-2">(999)</p>
                 </li>
-                <li
-                  className="flex text-center cursor-pointer items-center justify-between py-2"
-                  onClick={() => handleCategoryClick("children")}
-                >
+                <li className="flex text-center cursor-pointer items-center justify-between py-2">
                   <p>Enfant</p>
                   <p className="text-[11px] pt-2">(999)</p>
                 </li>
@@ -305,7 +291,7 @@ function Home() {
                     htmlFor="option1"
                     className="px-2 text-[15px] text-black font-[600]"
                   >
-                    Option 1
+                    Disponibilité
                   </label>
                 </li>
                 <li className="flex text-center items-center   py-2">
@@ -314,16 +300,7 @@ function Home() {
                     htmlFor="option2"
                     className="px-2 text-[15px] text-black font-[600]"
                   >
-                    Option 2
-                  </label>
-                </li>
-                <li className="flex text-center items-center   py-2">
-                  <input type="checkbox" id="option3" name="option3" />
-                  <label
-                    htmlFor="option3"
-                    className="px-2 text-[15px] text-black font-[600]"
-                  >
-                    Option 3
+                    Promotion
                   </label>
                 </li>
               </ul>
@@ -345,7 +322,7 @@ function Home() {
                     htmlFor="option1"
                     className="px-2 text-[15px] text-black font-[600]"
                   >
-                    Option 1
+                    ZARA
                   </label>
                 </li>
                 <li className="flex text-center items-center py-2">
@@ -359,7 +336,7 @@ function Home() {
                     htmlFor="option2"
                     className="px-2 text-[15px] text-black font-[600]"
                   >
-                    Option 2
+                    PMG
                   </label>
                 </li>
                 <li className="flex text-center items-center py-2">
@@ -373,7 +350,7 @@ function Home() {
                     htmlFor="option3"
                     className="px-2 text-[15px] text-black font-[600]"
                   >
-                    Option 3
+                    BRESHKA
                   </label>
                 </li>
               </ul>

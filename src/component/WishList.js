@@ -1,19 +1,28 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { IoClose } from 'react-icons/io5';
+import Cookies from "js-cookie";
 
 function WishList() {
   const [data, setData] = useState();
+
   useEffect(() => {
-    axios
-      .get("")
-      .then((response) => {
-        setData(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
+    const userId = Cookies.get("id");
+    if (userId) {
+      axios.get(`http://localhost:3001/favoris`)
+        .then((response) => {
+          setData(response.data);
+          console.log(response.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching user data:", error);
+        });
+    }
   }, []);
+
+
+
+ 
 
   const handleDelete = (productId) => {
     // Implement your delete logic here
@@ -35,17 +44,17 @@ function WishList() {
           </li>
           {data &&
             data.map((prd) => (
-              <div key={prd.product_id} className="items-center flex border-b-2 border-gray-200">
+              <div key={prd.product.product_id} className="items-center flex border-b-2 border-gray-200">
                   {/* Delete icon */}
                   <button className="p-2 border-2 border-gray-400 rounded-[50%] " onClick={() => handleDelete(prd.product_id)}>
                     <IoClose />
                   </button>
                 <li className="justify-around  items-center  flex py-2 font-[500] w-full">
-                  <img className="h-20 w-20" src={prd.img} alt="" />
-                  <h1 className="w-[20%]">{prd.name}</h1>
-                  <h1>{prd.price}</h1>
+                  <img className="h-20 w-20" src={prd.product.img} alt="" />
+                  <h1 className="w-[20%]">{prd.product.name}</h1>
+                  <h1>{prd.product.price}</h1>
                   <h1 className="flex justify-center w-[13%]">
-                    {prd.availability}
+                    {prd.product.availability}
                   </h1>
                 </li>
               </div>

@@ -9,15 +9,17 @@ import { FaInstagram, FaFacebook } from "react-icons/fa";
 import { ImLinkedin } from "react-icons/im";
 import { MdOutlineMail } from "react-icons/md";
 import Login from "./Login";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 
-function Navbar() {
+function Navbar({ onCategoryClick }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);  
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isNotificationPanelOpen, setIsNotificationPanelOpen] = useState(false);
+  
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -35,8 +37,21 @@ function Navbar() {
   useEffect(() => {
     // Check if the user is logged in when the component mounts
     const authToken = Cookies.get("authToken");
-    setIsLoggedIn(!!authToken); // Set isLoggedIn based on the presence of authToken
-  }, []);
+    setIsLoggedIn(authToken ? true : false);
+    console.log(isLoggedIn , authToken); // Set isLoggedIn based on the presence of authToken
+  },);
+
+
+  const handleFavoriteClick = () => {
+    if (isLoggedIn) {
+      // Rediriger vers la liste de souhaits si l'URL est différente de la liste de souhaits
+      navigate('/Profile/WishList')
+    } else {
+      // Afficher le composant de connexion
+      setIsModalOpen(true);
+      
+    }
+  };
 
   return (
     <div>
@@ -123,13 +138,17 @@ function Navbar() {
         </div>
         {/* <div>{logo}</div> */}
         <div className="flex items-center gap-2">
-          <Link to="/Profile">
-            <MdFavorite color="gray" size={26} />
+        {isLoggedIn ? (
+          <Link to="/Profile/WishList">
+            <MdFavorite color="gray" size={26} onClick={handleFavoriteClick}/>
           </Link>
+          ) : (
+            <MdFavorite color="gray" size={26} onClick={handleFavoriteClick}/>
+            )}
 
           {isLoggedIn ? (
             <div className="flex items-center gap-2">
-              <Link to="/profile">
+              <Link to="/Profile">
                 <RiAccountCircleFill
                   color="gray"
                   size={26}
@@ -183,12 +202,18 @@ function Navbar() {
             </button>
           </div>
           <ul className="m-6 pt-10 text-gray-500 text-[15px] font-[500]">
-            <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2">
+          <Link to="/?type=men">
+              {" "}
+            <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2" >
               HOMME
             </li>
+          </Link>
+          <Link to="?type=women">
+              {" "}
             <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2">
               FEMME
             </li>
+            </Link>
             <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2">
               ENFANT
             </li>
@@ -222,12 +247,18 @@ function Navbar() {
             </button>
           </div>
           <ul className="m-6 pt-10 text-gray-500 text-[15px] font-[500]">
+          <Link to="/?type=men">
+              
             <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2">
               HOMME
             </li>
+            </Link>
+            <Link to="?type=women">
+              {" "}
             <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2">
               FEMME
             </li>
+            </Link>
             <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2">
               ENFANT
             </li>
@@ -252,12 +283,18 @@ function Navbar() {
               BOUTIQUE
             </li>
           </Link>
+          <Link to="/?type=men">
+            {" "}
           <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2 cursor-pointer">
             HOMME
           </li>
+          </Link>
+          <Link to="?type=women">
+              {" "}
           <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2 cursor-pointer">
             FEMME
           </li>
+          </Link>
           <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2 cursor-pointer">
             ENFANT
           </li>

@@ -1,25 +1,39 @@
-import React, { useState } from "react";
-import Dashboard from "../component/Dashboard";
-import Addresses from "../component/Addresses";
 import AccountDetails from "../component/AccountDetails";
 import WishList from "../component/WishList";
+import TableBoard from "../component/TableBoard";
 import { FaUserCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 function Profile() {
   const [selectedItem, setSelectedItem] = useState("TABLEAU DE BORD");
   const navigate = useNavigate();
+  const [userData,setUserData]  = useState('');
+ 
 
   const handleItemClick = (itemName) => {
     setSelectedItem(itemName);
     if (itemName === "DECONNEXION") {
-      // Remove authToken cookie to logout
       Cookies.remove("authToken");
-      // Redirect to login page
+      console.log("deconnection");
       navigate("/");
     }
   };
+  useEffect(() => {
+    const userId = Cookies.get("id");
+    if (userId) {
+      axios.get(`http://localhost:3001/users/${userId}`)
+        .then((response) => {
+          setUserData(response.data);
+          console.log(userData);
+        })
+        .catch((error) => {
+          console.error("Error fetching user data:", error);
+        });
+    }
+  }, []);
 
   return (
     <div>
@@ -31,7 +45,7 @@ function Profile() {
           <div className="w-[30%] py-3 mt-3 border-r-[1px] border-gray-300">
             <div className="flex items-center mb-4 justify-between">
               <FaUserCircle size={90} className="text-gray-300" />
-              <h1 className="pr-6">Diaa</h1>
+              <h1 className="pr-6">{userData.username}</h1>
             </div>
             <ul className="mt-2 text-gray-500 text-sm font-[500] ">
               <li
@@ -48,20 +62,7 @@ function Profile() {
                   />
                 )}
               </li>
-              <li
-                className={`border-b-[1px] ${
-                  selectedItem === "ADRESSES" ? "border-red-400 border-r-[3px] border-b-0" : ""
-                } cursor-pointer  border-gray-300 flex text-center items-center justify-between py-4 transition-colors duration-500`}
-                onClick={() => handleItemClick("ADRESSES")}
-              >
-                <p>ADRESSES</p>
-                {selectedItem === "ADRESSES" && (
-                  <div
-                    className="h-full "
-                    style={{ width: "4px", animation: "fadeIn 2s" }}
-                  />
-                )}
-              </li>
+              
               <li
                 className={`border-b-[1px] ${
                   selectedItem === "DETAILS DU COMPTE" ? "border-red-400 border-r-[3px] border-b-0" : ""
@@ -107,8 +108,7 @@ function Profile() {
             </ul>
           </div>
         
-          {selectedItem === "TABLEAU DE BORD" && <Dashboard />}
-          {selectedItem === "ADRESSES" && <Addresses />}
+          {selectedItem === "TABLEAU DE BORD" && <TableBoard />}
           {selectedItem === "DETAILS DU COMPTE" && <AccountDetails />}
           {selectedItem === "WISHLIST" && <WishList />}
         </div>
