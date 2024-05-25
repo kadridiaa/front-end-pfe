@@ -15,23 +15,15 @@ function Home() {
   const [selectedCategory, setSelectedCategory] = useState("man");
   const [hoveredId, setHoveredId] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 20;
+
   let query = useQuery();
   let category = query.get("type");
-  
 
   const toggleFilter = () => {
     setIsFilterOpen(!isFilterOpen);
   };
-
-  // const toggleFavorite = (productId) => {
-  //   setData((prevData) =>
-  //     prevData.map((item) =>
-  //       item.product_id === productId
-  //         ? { ...item, isFavorite: !item.isFavorite }
-  //         : item
-  //     )
-  //   );
-  // };
 
   const handleMouseEnter = (id) => {
     setHoveredId(id);
@@ -47,6 +39,7 @@ function Home() {
         `http://localhost:3001${category ? '/trier/'+ category : "/products"}`
       );
       setData(response.data);
+      setCurrentPage(1); 
       console.log(response.data);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -78,8 +71,16 @@ function Home() {
     }
   };
 
+  // Get current products
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = data ? data.slice(indexOfFirstProduct, indexOfLastProduct) : [];
+
+  // Change page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   return (
-    <div className="h-screen flex flex-col ">
+    <div className="h-screen flex flex-col">
       <div
         className={
           isFilterOpen
@@ -88,7 +89,7 @@ function Home() {
         }
         onClick={toggleFilter}
       ></div>
-      <div className="lg:flex lg:items-center lg:w-full lg:justify-evenly ">
+      <div className="lg:flex lg:items-center lg:w-full lg:justify-evenly">
         <div className="flex items-center justify-center m-4 text-[20px] text-gray-400">
           <a href="">ACCEUIL</a>
           <a className="px-2" href="">
@@ -119,7 +120,7 @@ function Home() {
           }`}
         >
           {/* Contenu de votre volet latéral */}
-          <div className=" p-4">
+          <div className="p-4">
             <div className="flex justify-end">
               <button
                 className="text-gray-700 hover:text-gray-900"
@@ -136,15 +137,15 @@ function Home() {
               <ul className="mt-2 text-gray-500">
                 <li className="flex text-center cursor-pointer items-center justify-between py-2">
                   <p>Homme</p>
-                  <p className="text-[11px] pt-2">(999)</p>
+                  
                 </li>
-                <li className="flex text-center items-center cursor-pointer  justify-between py-2">
+                <li className="flex text-center items-center cursor-pointer justify-between py-2">
                   <p>Femme</p>
-                  <p className="text-[11px] pt-2">(999)</p>
+             
                 </li>
-                <li className="flex text-center items-center cursor-pointer justify-between py-2 ">
+                <li className="flex text-center items-center cursor-pointer justify-between py-2">
                   <p>Enfant</p>
-                  <p className="text-[11px] pt-2">(999)</p>
+                  
                 </li>
               </ul>
             </div>
@@ -154,7 +155,7 @@ function Home() {
               </h2>
               <div className="border-b-2 border-gray-400 w-10 mt-1"></div>
               <ul className="mt-2 text-gray-500">
-                <li className="flex text-center items-center  py-2">
+                <li className="flex text-center items-center py-2">
                   <input type="checkbox" id="option1" name="option1" />
                   <label
                     htmlFor="option1"
@@ -163,7 +164,7 @@ function Home() {
                     Option 1
                   </label>
                 </li>
-                <li className="flex text-center items-center   py-2">
+                <li className="flex text-center items-center py-2">
                   <input type="checkbox" id="option2" name="option2" />
                   <label
                     htmlFor="option2"
@@ -172,7 +173,7 @@ function Home() {
                     Option 2
                   </label>
                 </li>
-                <li className="flex text-center items-center   py-2">
+                <li className="flex text-center items-center py-2">
                   <input type="checkbox" id="option3" name="option3" />
                   <label
                     htmlFor="option3"
@@ -235,13 +236,14 @@ function Home() {
             </div>
           </div>
         </div>
-        <div className="flex items-center justify-center m-4 ">
+        <div className="flex items-center justify-center m-4">
           <div className="hidden lg:flex pr-4">
             <h1 className="text-gray-500">
-              Affichage de 1–20 sur 1399 résultats
+              Affichage de 1–20 sur {data ? data.length : 0} résultats
             </h1>
           </div>
-          <select className="appearance-none  bg-gray-200 border border-gray-300 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500">
+          <select className="appearance-none bg-gray-200 border border-gray-300 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500">
+          <option disabled selected value="">Sélectionner le tri</option>
             <option>Tri par prix</option>
             <option>Tri du plus recent</option>
           </select>
@@ -257,8 +259,8 @@ function Home() {
         </div>
       </div>
       <div className="flex justify-center">
-        <div className="w-full lg:w-[70%] flex gap-4 ">
-          <div className=" p-2 hidden lg:flex lg:flex-col w-[35%]">
+        <div className="w-full lg:w-[70%] flex gap-4">
+          <div className="p-2 hidden lg:flex lg:flex-col w-[35%]">
             <div className="my-2">
               <h2 className="text-[18px] font-bold text-gray-400">
                 CATEGORIES DES PRODUITS
@@ -267,15 +269,15 @@ function Home() {
               <ul className="mt-2 text-gray-500">
                 <li className="flex text-center cursor-pointer items-center justify-between py-2">
                   <p>Homme</p>
-                  <p className="text-[11px] pt-2">(999)</p>
+                  
                 </li>
                 <li className="flex text-center cursor-pointer items-center justify-between py-2">
                   <p>Femme</p>
-                  <p className="text-[11px] pt-2">(999)</p>
+                  
                 </li>
                 <li className="flex text-center cursor-pointer items-center justify-between py-2">
                   <p>Enfant</p>
-                  <p className="text-[11px] pt-2">(999)</p>
+                  
                 </li>
               </ul>
             </div>
@@ -285,7 +287,7 @@ function Home() {
               </h2>
               <div className="border-b-2 border-gray-400 w-10 mt-1"></div>
               <ul className="mt-2 text-gray-500">
-                <li className="flex text-center items-center  py-2">
+                <li className="flex text-center items-center py-2">
                   <input type="checkbox" id="option1" name="option1" />
                   <label
                     htmlFor="option1"
@@ -294,7 +296,7 @@ function Home() {
                     Disponibilité
                   </label>
                 </li>
-                <li className="flex text-center items-center   py-2">
+                <li className="flex text-center items-center py-2">
                   <input type="checkbox" id="option2" name="option2" />
                   <label
                     htmlFor="option2"
@@ -356,10 +358,9 @@ function Home() {
               </ul>
             </div>
           </div>
-
-          <div className="m-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {data &&
-              data.map((prd) => (
+          <div className="m-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 ">
+            {currentProducts &&
+              currentProducts.map((prd) => (
                 <div key={prd.product_id} className="">
                   <a href={prd.link}>
                     <div
@@ -392,6 +393,30 @@ function Home() {
           </div>
         </div>
       </div>
+      {data && data.length > productsPerPage && (
+        <div className="flex justify-center mt-4">
+          <nav>
+            <ul className="flex list-none">
+              {[...Array(Math.ceil(data.length / productsPerPage)).keys()].map(
+                (number) => (
+                  <li key={number} className="mx-1">
+                    <button
+                      onClick={() => paginate(number + 1)}
+                      className={`py-2 px-4 ${
+                        currentPage === number + 1
+                          ? "bg-red-500 text-white"
+                          : "bg-gray-200"
+                      } rounded`}
+                    >
+                      {number + 1}
+                    </button>
+                  </li>
+                )
+              )}
+            </ul>
+          </nav>
+        </div>
+      )}
     </div>
   );
 }

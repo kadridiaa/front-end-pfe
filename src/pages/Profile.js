@@ -8,10 +8,9 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 function Profile() {
-  const [selectedItem, setSelectedItem] = useState("TABLEAU DE BORD");
+  const [selectedItem, setSelectedItem] = useState("DETAILS DU COMPTE");
   const navigate = useNavigate();
-  const [userData,setUserData]  = useState('');
- 
+  const [userData, setUserData] = useState('');
 
   const handleItemClick = (itemName) => {
     setSelectedItem(itemName);
@@ -21,6 +20,7 @@ function Profile() {
       navigate("/");
     }
   };
+
   useEffect(() => {
     const userId = Cookies.get("id");
     if (userId) {
@@ -48,21 +48,22 @@ function Profile() {
               <h1 className="pr-6">{userData.username}</h1>
             </div>
             <ul className="mt-2 text-gray-500 text-sm font-[500] ">
-              <li
-                className={`border-b-[1px] ${
-                  selectedItem === "TABLEAU DE BORD" ? "border-red-400 border-r-[3px] border-b-0" : ""
-                } border-gray-300 flex text-center items-center justify-between py-4 cursor-pointer transition-colors duration-500`}
-                onClick={() => handleItemClick("TABLEAU DE BORD")}
-              >
-                <p>TABLEAU DE BORD</p>
-                {selectedItem === "TABLEAU DE BORD" && (
-                  <div
-                    className="h-full "
-                    style={{ width: "4px", animation: "fadeIn 2s" }}
-                  />
-                )}
-              </li>
-              
+              {userData.isAdmin && (
+                <li
+                  className={`border-b-[1px] ${
+                    selectedItem === "TABLEAU DE BORD" ? "border-red-400 border-r-[3px] border-b-0" : ""
+                  } border-gray-300 flex text-center items-center justify-between py-4 cursor-pointer transition-colors duration-500`}
+                  onClick={() => handleItemClick("TABLEAU DE BORD")}
+                >
+                  <p>TABLEAU DE BORD</p>
+                  {selectedItem === "TABLEAU DE BORD" && (
+                    <div
+                      className="h-full "
+                      style={{ width: "4px", animation: "fadeIn 2s" }}
+                    />
+                  )}
+                </li>
+              )}
               <li
                 className={`border-b-[1px] ${
                   selectedItem === "DETAILS DU COMPTE" ? "border-red-400 border-r-[3px] border-b-0" : ""
@@ -107,8 +108,8 @@ function Profile() {
               </li>
             </ul>
           </div>
-        
-          {selectedItem === "TABLEAU DE BORD" && <TableBoard />}
+
+          {selectedItem === "TABLEAU DE BORD" && userData.isAdmin && <TableBoard />}
           {selectedItem === "DETAILS DU COMPTE" && <AccountDetails />}
           {selectedItem === "WISHLIST" && <WishList />}
         </div>

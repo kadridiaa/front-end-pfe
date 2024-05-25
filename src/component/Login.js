@@ -11,27 +11,22 @@ function Login({ onClose }) {
   });
   const navigate = useNavigate();
 
-  const [formData2, setFormData2] = useState({
+  const initialFormData = {
+    firstName: "",
+    lastName: "",
     username: "",
     email1: "",
     password1: "",
     rememberMe: false,
-  });
+  };
+
+  const [formData2, setFormData2] = useState(initialFormData);
 
   const handleChange1 = (e) => {
     const { name, value } = e.target;
     setFormData1({
       ...formData1,
       [name]: value,
-    });
-  };
-
-  const handleChange2 = (e) => {
-    const { name, value, checked } = e.target;
-    const newValue = name === "rememberMe" ? checked : value;
-    setFormData2({
-      ...formData2,
-      [name]: newValue,
     });
   };
 
@@ -44,37 +39,49 @@ function Login({ onClose }) {
     });
     onClose();
   };
+  const handleChange2 = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData2((prevState) => ({
+      ...prevState,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
 
-  const handleSubmit2 = (e) => {
+  const handleSubmit2 = async (e) => {
     e.preventDefault();
-    console.log(formData2);
-    setFormData2({
-      username: "",
-      email1: "",
-      password1: "",
-      rememberMe: formData2.rememberMe,
-    });
-    onClose();
+    try {
+      const response = await axios.post("http://localhost:3001/users", {
+        firstName: formData2.firstName,
+        lastName: formData2.lastName,
+        username: formData2.username,
+        email: formData2.email1,
+        password: formData2.password1,
+        isAdmin: false,
+      });
+      console.log("User created successfully:", response.data);
+      setFormData2(initialFormData);
+      // Handle successful registration (e.g., redirect to another page or display a success message)
+    } catch (error) {
+      console.error("Error creating user:", error.response.data);
+      // Handle error (e.g., display error message)
+    }
   };
 
   const login = async () => {
     try {
-      const response = await axios.post(
-        "http://localhost:3001/users/login",
-        {
-          email: formData1.email,
-          password: formData1.password,
-        }
-      );
-     
+      const response = await axios.post("http://localhost:3001/users/login", {
+        email: formData1.email,
+        password: formData1.password,
+      });
+
       // Accéder à l'ID utilisateur depuis la réponse de l'API
       const userId = response.data.user.id;
       console.log(userId);
-  
+
       // Stocker l'ID utilisateur dans les cookies
       Cookies.set("id", userId, { expires: 7, path: "" });
       Cookies.set("authToken", response.data.token, { expires: 7, path: "" });
-  
+
       // Rediriger l'utilisateur vers la page de profil
       navigate("/profile");
     } catch (error) {
@@ -140,6 +147,43 @@ function Login({ onClose }) {
           <h2 className="text-2xl text-gray-600  mb-4">S'enregistrer</h2>
           <form onSubmit={handleSubmit2}>
             <div className="mb-4">
+              <div className="mb-4 flex w-full">
+                <div className="w-1/2 mr-2">
+                  <label
+                    htmlFor="firstName"
+                    className="block text-sm font-semibold mb-2"
+                  >
+                    Prénom
+                  </label>
+                  <input
+                    type="text"
+                    id="firstName"
+                    name="firstName"
+                    value={formData2.firstName}
+                    onChange={handleChange2}
+                    className="outline-none w-full px-3 py-2 border border-gray-300 shadow"
+                    required
+                  />
+                </div>
+
+                <div className="w-1/2">
+                  <label
+                    htmlFor="lastName"
+                    className="block text-sm font-semibold mb-2"
+                  >
+                    Nom
+                  </label>
+                  <input
+                    type="text"
+                    id="lastName"
+                    name="lastName"
+                    value={formData2.lastName}
+                    onChange={handleChange2}
+                    className="outline-none w-full px-3 py-2 border border-gray-300 shadow"
+                    required
+                  />
+                </div>
+              </div>
               <label htmlFor="username" className="block text-sm font-semibold">
                 Identifiant
               </label>
@@ -153,6 +197,7 @@ function Login({ onClose }) {
                 required
               />
             </div>
+
             <div className="mb-4">
               <label htmlFor="email1" className="block text-sm font-semibold">
                 Email

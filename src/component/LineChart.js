@@ -11,8 +11,8 @@ const LineChart = () => {
         labels: ['janfier', 'Fevrier', 'Mars', 'Avril', 'Mai', 'Juin', 'Julliet' , 'Aout' , 'Septembre' , 'Octobre' , 'November' , 'Decembre'],
         datasets: [
             {
-                label: 'My First Dataset',
-                data: [65, 59, 80, 81, 56, 55, 40],
+                label: "Data de l'annee ",
+                data: [65, 59, 80, 81, 60],
                 fill: false,
                 borderColor: 'rgb(75, 192, 192)',
                 tension: 0.1,
@@ -28,7 +28,7 @@ const LineChart = () => {
             },
             title: {
                 display: true,
-                text: 'Chart.js Line Chart',
+                text: 'Line Chart',
             },
         },
     };

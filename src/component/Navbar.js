@@ -11,15 +11,36 @@ import { MdOutlineMail } from "react-icons/md";
 import Login from "./Login";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import { IoNotificationsCircle } from "react-icons/io5";
+import logo from "../pictures/logo.png";
 
 function Navbar({ onCategoryClick }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);  
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isNotificationPanelOpen, setIsNotificationPanelOpen] = useState(false);
-  
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [comment, setComment] = useState("");
+
   const navigate = useNavigate();
+
+  const togglePopover = () => {
+    setIsPopoverOpen(!isPopoverOpen);
+  };
+
+  const handleCommentChange = (event) => {
+    setComment(event.target.value);
+  };
+
+  const handleSubmit = () => {
+    // Handle submission of comment here
+    console.log("Comment submitted:", comment);
+    // Optionally, you can clear the comment input after submission
+    setComment("");
+    // Close the popover
+    setIsPopoverOpen(false);
+  };
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -38,18 +59,16 @@ function Navbar({ onCategoryClick }) {
     // Check if the user is logged in when the component mounts
     const authToken = Cookies.get("authToken");
     setIsLoggedIn(authToken ? true : false);
-    console.log(isLoggedIn , authToken); // Set isLoggedIn based on the presence of authToken
-  },);
-
+    console.log(isLoggedIn, authToken); // Set isLoggedIn based on the presence of authToken
+  });
 
   const handleFavoriteClick = () => {
     if (isLoggedIn) {
       // Rediriger vers la liste de souhaits si l'URL est différente de la liste de souhaits
-      navigate('/Profile/WishList')
+      navigate("/Profile/WishList");
     } else {
       // Afficher le composant de connexion
       setIsModalOpen(true);
-      
     }
   };
 
@@ -81,9 +100,29 @@ function Navbar({ onCategoryClick }) {
             className="px-2 cursor-pointer hover:text-white hover:duration-1000"
             onMouseEnter={handleHover}
             onMouseLeave={handleHover}
+            onClick={togglePopover}
           >
             Contact
           </li>
+          {isPopoverOpen && (
+            <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+              <div className="bg-white p-4 w-[50%]  rounded-lg shadow-xl">
+                <h1 className="text-xl font-bold text-black py-2" >Contacter nous : </h1>
+                <textarea
+                  className="w-full h-64 border border-gray-300 rounded-md resize-none mb-4 px-2 py-1"
+                  placeholder="Enter your comment..."
+                  value={comment}
+                  onChange={handleCommentChange}
+                />
+                <button
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                  onClick={handleSubmit}
+                >
+                  Submit
+                </button>
+              </div>
+            </div>
+          )}
           <li
             className="px-2 cursor-pointer hover:text-white hover:duration-1000"
             onMouseEnter={handleHover}
@@ -109,9 +148,9 @@ function Navbar({ onCategoryClick }) {
         }
         onClick={toggleMenu}
       ></div>
-      <div className="flex items-center justify-between lg:justify-evenly lg:w-[90%] m-4">
-        <div className="hidden lg:flex">
-          logo
+      <div className="flex items-center justify-between lg:justify-evenly lg:w-[90%] my-4">
+        <div className="hidden lg:flex lg:justify-center ">
+          <img src={logo} className="w-20" />
           {/* <img src={logo} className="" alt="" /> */}
         </div>
         <div className="flex items-center justify-center ">
@@ -138,13 +177,17 @@ function Navbar({ onCategoryClick }) {
         </div>
         {/* <div>{logo}</div> */}
         <div className="flex items-center gap-2">
-        {isLoggedIn ? (
-          <Link to="/Profile/WishList">
-            <MdFavorite color="gray" size={26} onClick={handleFavoriteClick}/>
-          </Link>
+          {isLoggedIn ? (
+            <Link to="/Profile/WishList">
+              <MdFavorite
+                color="gray"
+                size={26}
+                onClick={handleFavoriteClick}
+              />
+            </Link>
           ) : (
-            <MdFavorite color="gray" size={26} onClick={handleFavoriteClick}/>
-            )}
+            <MdFavorite color="gray" size={26} onClick={handleFavoriteClick} />
+          )}
 
           {isLoggedIn ? (
             <div className="flex items-center gap-2">
@@ -169,10 +212,9 @@ function Navbar({ onCategoryClick }) {
             size={26}
             onClick={toggleNotificationPanel}
           />
-         
+
           {isNotificationPanelOpen && (
-            <div className="bg-black bg-opacity-50 fixed top-0 left-0 h-screen w-full z-10">
-            </div>
+            <div className="bg-black bg-opacity-50 fixed top-0 left-0 h-screen w-full z-10"></div>
           )}
           <div
             className={
@@ -202,21 +244,24 @@ function Navbar({ onCategoryClick }) {
             </button>
           </div>
           <ul className="m-6 pt-10 text-gray-500 text-[15px] font-[500]">
-          <Link to="/?type=men">
+            <Link to="/?type=men">
               {" "}
-            <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2" >
-              HOMME
-            </li>
-          </Link>
-          <Link to="?type=women">
-              {" "}
-            <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2">
-              FEMME
-            </li>
+              <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2">
+                HOMME
+              </li>
             </Link>
-            <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2">
-              ENFANT
-            </li>
+            <Link to="?type=women">
+              {" "}
+              <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2">
+                FEMME
+              </li>
+            </Link>
+            <Link to="?type=children">
+              {" "}
+              <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2">
+                ENFANT
+              </li>
+            </Link>
             <Link to="/">
               {" "}
               <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2">
@@ -247,31 +292,34 @@ function Navbar({ onCategoryClick }) {
             </button>
           </div>
           <ul className="m-6 pt-10 text-gray-500 text-[15px] font-[500]">
-          <Link to="/?type=men">
-              
-            <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2">
-              HOMME
+            <li className="flex items-center justify-between py-2 border-b border-gray-200">
+              <IoNotificationsCircle size={30} className="mx-2" />
+              <div>
+                le Produit :{" "}
+                <span className="font-bold text-red-500">tshirt bleu</span> est
+                disponbile avec le prix :<div>23000</div>
+              </div>
             </li>
-            </Link>
-            <Link to="?type=women">
-              {" "}
-            <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2">
-              FEMME
+            <li className="flex items-center justify-between py-2 border-b border-gray-200">
+              <IoNotificationsCircle size={42} className="mx-2" />
+              <div>
+                le Produit :{" "}
+                <span className="font-bold text-red-500">
+                  pontalon pour les enfants noire
+                </span>{" "}
+                est disponbile avec le prix :<div>23000</div>
+              </div>
             </li>
-            </Link>
-            <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2">
-              ENFANT
+            <li className="flex items-center justify-between py-2 border-b border-gray-200">
+              <IoNotificationsCircle size={30} className="mx-2" />
+              <div>
+                le Produit :{" "}
+                <span className="font-bold text-red-500">
+                  casquette 40 size
+                </span>{" "}
+                est disponbile avec le prix :<div>23000</div>
+              </div>
             </li>
-            <Link to="/">
-              {" "}
-              <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2">
-                BOUTIQUE
-              </li>
-            </Link>
-            <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2">
-              A PROPOS
-            </li>
-            <li></li>
           </ul>
         </div>
       </div>
@@ -285,19 +333,22 @@ function Navbar({ onCategoryClick }) {
           </Link>
           <Link to="/?type=men">
             {" "}
-          <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2 cursor-pointer">
-            HOMME
-          </li>
+            <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2 cursor-pointer">
+              HOMME
+            </li>
           </Link>
           <Link to="?type=women">
-              {" "}
-          <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2 cursor-pointer">
-            FEMME
-          </li>
+            {" "}
+            <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2 cursor-pointer">
+              FEMME
+            </li>
           </Link>
-          <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2 cursor-pointer">
-            ENFANT
-          </li>
+          <Link to="?type=children">
+            {" "}
+            <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2 cursor-pointer">
+              ENFANT
+            </li>
+          </Link>
         </ul>
         <div className="flex items-center justify-center w-full mx-1 lg:hidden">
           <input

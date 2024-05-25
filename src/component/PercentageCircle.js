@@ -3,11 +3,11 @@ import { Pie } from 'react-chartjs-2';
 import 'chart.js/auto';
 
 const data = {
-  labels: ['Kiev', 'Donetsk', 'Kharkov', 'Odessa', 'Dnepropetrovsk', 'Lviv', 'Zaporizhia', 'Kryvyi Rih', 'Mykolaiv', 'Mariupol', 'Lugansk', 'Vinnytsia', 'Simferopol', 'Sevastopol', 'Poltava', 'Chernihiv', 'Cherkasy', 'Kherson', 'Khmelnytskyi', 'Sumy', 'Zhytomyr'],
+  labels: ['zara' , 'breshka' , 'pmg' , 'pull and bear'],
   datasets: [
     {
-      label: '# of Votes',
-      data: [12, 19, 3, 5, 2, 3, 6, 1, 4, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], // Example data
+      label: '# nombre de produit',
+      data: [47, 19, 36], // Example data
       backgroundColor: [
         'rgba(255, 99, 132, 0.2)',  // red
         'rgba(54, 162, 235, 0.2)',   // blue
