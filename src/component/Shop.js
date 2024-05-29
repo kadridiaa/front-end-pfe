@@ -92,22 +92,24 @@ function Shop() {
   };
 
   return (
-    <div className="mt-4">
-      <button
+    <div className="">
+      {/* <button
         onClick={handleSearchClick}
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
       >
         Scrappe some products
-      </button>
+      </button> */}
 
-      {showPopover && (
-        <div className="border border-gray-300 p-4 mt-4">
+      
+        <div className=" p-4 mt-4">
           <label className="block mb-2">
+          <h1 className="block text-gray-700 text-sm font-bold mb-2">
             Choose Website:
+            </h1>
             <select
               value={selectedWebsite}
               onChange={handleWebsiteChange}
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             >
               <option value="">Select Website</option>
               <option value="zara">Zara</option>
@@ -117,11 +119,13 @@ function Shop() {
 
           {selectedWebsite === "pmg" && (
             <label className="block mb-2">
+              <h1 className="block text-gray-700 text-sm font-bold mb-2">
               Choose Brand:
+              </h1>
               <select
                 value={selectedBrand}
                 onChange={handleBrandChange}
-                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               >
                 <option value="">Select Brand</option>
                 <option value="lacoste">Lacoste</option>
@@ -131,33 +135,39 @@ function Shop() {
           )}
 
           {selectedWebsite === "zara" && (
-            <label className="block mb-2">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+             <h1 className="block text-gray-700 text-sm font-bold mb-2">
               Number of Products:
+              </h1>
               <input
                 type="number"
                 value={numOfProducts}
                 onChange={handleNumOfProductsChange}
-                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               />
             </label>
           )}
 
-          <label className="block mb-2">
+          <label className="block mb-2 ">
+            <h1 className="block text-gray-700 text-sm font-bold mb-2">
             Product Name:
+            </h1>
             <input
               type="text"
               value={productName}
               onChange={handleProductNameChange}
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
           </label>
 
           <label className="block mb-2">
+          <h1 className="block text-gray-700 text-sm font-bold mb-2">
             Choose Sexe:
+            </h1>
             <select
               value={selectedSexe}
               onChange={handleSexeChange}
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             >
               <option value="">Select Sexe</option>
               <option value="man">Man</option>
@@ -168,40 +178,15 @@ function Shop() {
 
           <button
             onClick={handleSubmit}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded "
           >
             Submit
           </button>
         </div>
-      )}
+     
     </div>
   );
 }
 
 export default Shop;
 
-//   const handleSubmit = () => {
-//     const formData = {
-//         numberOfProducts: numOfProducts,
-//         nameOfProduct: productName,
-//         sexe: selectedSexe,
-//         selectedWebsite: selectedWebsite
-//     };
-
-//     fetch('http://127.0.0.1:5000/store_data', {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json'
-//         },
-//         body: JSON.stringify(formData)
-//     })
-//     .then(response => {
-//         if (response.ok) {
-//             console.log('Data stored successfully');
-//         } else {
-//             console.error('Failed to store data');
-//         }
-//     })
-//     .catch(error => console.error('Error:', error));
-//     setShowPopover(false);
-// };

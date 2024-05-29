@@ -4,7 +4,7 @@ import React ,{useState} from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./component/Navbar";
 import Home from "./pages/Home";
-import Shop from "./pages/Shop";
+// import Shop from "./pages/Shop";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Condition from "./pages/Condition";
@@ -38,7 +38,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home selectedCategory={selectedCategory}/>} /> {/* Page Home par défaut */}
           {/* Ajoutez d'autres routes pour d'autres pages si nécessaire */}
-          <Route path="/shop" element={<Shop />} />
+          {/* <Route path="/shop" element={<Shop />} /> */}
           <Route path="/Condition" element={<Condition />} />
           <Route path="/Profile" element={<Profile />} />
           <Route path="/Profile/wishList" element={<WishList />} />

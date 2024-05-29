@@ -73,6 +73,7 @@ function Login({ onClose }) {
         email: formData1.email,
         password: formData1.password,
       });
+      console.log(response.data)
 
       // Accéder à l'ID utilisateur depuis la réponse de l'API
       const userId = response.data.user.id;

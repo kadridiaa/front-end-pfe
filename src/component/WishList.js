@@ -5,17 +5,20 @@ import { IoClose } from "react-icons/io5";
 import Cookies from "js-cookie";
 
 function WishList() {
-  const [data, setData] = useState();
+  const [data, setData] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [currentProduct, setCurrentProduct] = useState(null);
   const [newPriceThreshold, setNewPriceThreshold] = useState("");
+  const [showIcons, setShowIcons] = useState(null); // Nouvel état pour afficher les icônes
 
   useEffect(() => {
     const userId = Cookies.get("id");
-    const userToken = Cookies.get("authToken")
+    const userToken = Cookies.get("authToken");
     if (userId) {
       axios
-        .get(`http://localhost:3001/favoris` , {headers: {Authorization : "berear " + userToken}})
+        .get(`http://localhost:3001/favoris/produit`, {
+          headers: { Authorization: "Bearer " + userToken },
+        })
         .then((response) => {
           setData(response.data);
           console.log(response.data);
@@ -31,13 +34,11 @@ function WishList() {
     setNewPriceThreshold(product.priceThreshold || "");
     setIsEditing(true);
   };
+
   const handleCancel = () => {
     setIsEditing(false);
     setCurrentProduct(null);
     setNewPriceThreshold("");
-  };
-  const handleIconClick = () => {
-    setIsEditing(!isEditing);
   };
 
   const handleSaveClick = () => {
@@ -54,10 +55,22 @@ function WishList() {
     }
   };
 
-  const handleDelete = (productId) => {
-    // Implement your delete logic here
-    console.log(`Delete product with ID: ${productId}`);
+  const handleDeleteClick = (favoriteId) => {
+    const userToken = Cookies.get("authToken");
+    console.log(favoriteId)
+    axios
+      .delete(`http://localhost:3001/favoris/${favoriteId}`, {
+        headers: { Authorization: "Bearer " + userToken },
+      })
+      .then((response) => {
+        console.log(`Product with ID: ${favoriteId} deleted successfully`);
+        setData(data.filter((prd) => prd.favorite_id !== favoriteId));
+      })
+      .catch((error) => {
+        console.error("Error deleting product:", error);
+      });
   };
+
   const Modal = ({
     newPriceThreshold,
     setNewPriceThreshold,
@@ -102,41 +115,45 @@ function WishList() {
       <div className="m-6 ">
         <ul className="flex flex-col w-full text-gray-500">
           <li className="justify-around border-b-2 border-gray-400 flex py-2 font-[500]">
-            <h1>IMAGE DU PODUIT</h1>
-            <h1>NOM DU PODUIT</h1>
+            <h1>IMAGE DU PRODUIT</h1>
+            <h1>NOM DU PRODUIT</h1>
             <h1>PRIX UNITAIRE</h1>
             <h1>SEUIL DE PRIX</h1>
-            <h1>ETAT DE STOCK</h1>
+            <h1 className="hidden lg:flex">ETAT DE STOCK</h1>
           </li>
-          
 
           {data &&
             data.map((prd) => (
               <div
-                key={prd.product_id}
+                key={prd.favorite_id}
                 className="items-center flex border-b-2 border-gray-200"
               >
-                {/* Delete icon */}
-                <div
-                  onClick={handleIconClick}
-                  className="flex items-center justify-center"
-                >
-                  
-                    <div
-                      onClick={() => handleEditClick(prd.product_id)}
-                      className="flex items-center justify-center cursor-pointer"
-                    >
-                      <VscEdit className="cursor-pointer text-blue-500 ml-2" />
-                    </div>
-                  
+                <div className="flex items-center justify-center">
+                  {showIcons === prd.favorite_id ? (
+                    <>
+                      <VscTrash
+                        onClick={() => handleDeleteClick(prd.favorite_id)}
+                        className="cursor-pointer text-red-500"
+                      />
+                      <VscEdit
+                        onClick={() => handleEditClick(prd)}
+                        className="cursor-pointer text-blue-500 ml-2"
+                      />
+                    </>
+                  ) : (
+                    <VscActivateBreakpoints
+                      onClick={() => setShowIcons(prd.favorite_id)}
+                      className="cursor-pointer"
+                    />
+                  )}
                 </div>
-                <li className="justify-around  items-center  flex py-2 font-[500] w-full">
+                <li className="justify-around items-center flex py-2 font-[500] w-full">
                   <img className="h-20 w-20" src={prd.product.img} alt="" />
                   <h1 className="w-[20%]">{prd.product.name}</h1>
                   <h1>{prd.product.price}</h1>
-                  <h1>{prd.price}</h1>
-                  <h1 className="flex justify-center w-[13%]">
-                    {prd.availability}
+                  <h1>{prd.pricef}</h1>
+                  <h1 className="hidden lg:flex justify-center w-[13%]">
+                    {prd.product.availability}
                   </h1>
                 </li>
               </div>

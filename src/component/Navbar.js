@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { RiAccountCircleFill } from "react-icons/ri";
 import { MdFavorite } from "react-icons/md";
 import { IoMdMenu } from "react-icons/io";
@@ -13,11 +14,13 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { IoNotificationsCircle } from "react-icons/io5";
 import logo from "../pictures/logo.png";
+import Shop from "./Shop";
 
 function Navbar({ onCategoryClick }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen2, setIsModalOpen2] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isNotificationPanelOpen, setIsNotificationPanelOpen] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -29,17 +32,37 @@ function Navbar({ onCategoryClick }) {
     setIsPopoverOpen(!isPopoverOpen);
   };
 
-  const handleCommentChange = (event) => {
-    setComment(event.target.value);
+  const handleSubmit = async () => {
+    try {
+      const userToken = Cookies.get("authToken");
+
+      // Make an HTTP POST request to save contact information
+      const response = await axios.post(
+        "http://localhost:3001/contactes/",
+        {
+          comment: comment, // Send the comment data in the request body
+        },
+        {
+          headers: {
+            Authorization: "Bearer " + userToken, // Correct typo in "Bearer" and add space
+          },
+        }
+      );
+
+      if (response.status === 201) {
+        setComment(""); // Clear the comment input field after successful submission
+        setIsPopoverOpen(false); // Close the popover/modal after successful submission
+        console.log("Contact information saved successfully.");
+      } else {
+        console.error("Failed to save contact information.");
+      }
+    } catch (error) {
+      console.error("Error saving contact information:", error);
+    }
   };
 
-  const handleSubmit = () => {
-    // Handle submission of comment here
-    console.log("Comment submitted:", comment);
-    // Optionally, you can clear the comment input after submission
-    setComment("");
-    // Close the popover
-    setIsPopoverOpen(false);
+  const handleCommentChange = (event) => {
+    setComment(event.target.value);
   };
 
   const toggleMenu = () => {
@@ -54,6 +77,14 @@ function Navbar({ onCategoryClick }) {
   };
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
+  };
+
+  const handleModalOpen = () => {
+    setIsModalOpen2(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen2(false);
   };
   useEffect(() => {
     // Check if the user is logged in when the component mounts
@@ -106,8 +137,10 @@ function Navbar({ onCategoryClick }) {
           </li>
           {isPopoverOpen && (
             <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-              <div className="bg-white p-4 w-[50%]  rounded-lg shadow-xl">
-                <h1 className="text-xl font-bold text-black py-2" >Contacter nous : </h1>
+              <div className="bg-white p-4 w-[50%] rounded-lg shadow-xl">
+                <h1 className="text-xl font-bold text-black py-2">
+                  Contact us:
+                </h1>
                 <textarea
                   className="w-full h-64 border border-gray-300 rounded-md resize-none mb-4 px-2 py-1"
                   placeholder="Enter your comment..."
@@ -323,8 +356,33 @@ function Navbar({ onCategoryClick }) {
           </ul>
         </div>
       </div>
-      <div className="bg-gray-300 bg-opacity-50 flex h-12">
-        <ul className="hidden lg:flex justify-center w-full gap-6 text-gray-500">
+      <div className="bg-gray-300 bg-opacity-50 flex w-full justify-center items-center h-16">
+        <div>
+          {isLoggedIn && (
+            <button
+              onClick={handleModalOpen}
+              className="bg-red-500 mx-8 text-[14px] hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            >
+              Scrappe des produits
+            </button>
+          )}
+          {isModalOpen2 && (
+            <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+              <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
+                <Shop />
+                <div className="flex justify-end">
+                  <button
+                    onClick={handleModalClose}
+                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                  >
+                    Fermer le modal
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+        <ul className="hidden lg:flex justify-center  gap-6 text-gray-500">
           <Link to="/">
             {" "}
             <li className="flex text-center  items-center justify-between py-4 border-gray-200 border-b-2 cursor-pointer">
