@@ -19,7 +19,10 @@ function Home() {
   const [selectedWebsites, setSelectedWebsites] = useState([]);
   const [selectedSexes, setSelectedSexes] = useState([]);
   const productsPerPage = 20;
+  const [wishlist, setWishlist] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [pricef, setPrice] = useState("");
 
   // Fonction pour ouvrir la popup de la boutique
 
@@ -58,6 +61,33 @@ function Home() {
     // Mettre à jour les produits triés
     setData(sortedProducts);
   };
+  const savePriceAndAddToWishlist = async () => {
+    const userToken = Cookies.get("authToken");
+    try {
+      if (!pricef.trim()) {
+        console.error("Price cannot be empty");
+        return;
+      }
+
+      console.log("Price to be sent to backend:", pricef);
+      await axios.post(
+        "http://localhost:3001/favoris/",
+        {
+          productId: selectedProduct,
+          pricef,
+        },
+        {
+          headers: { Authorization: "Bearer " + userToken },
+        }
+      );
+      // Close the modal after successful addition to wishlist
+      setIsModalOpen(false);
+      // Refetch the wishlist to update UI
+      fetchWishlist();
+    } catch (error) {
+      console.error("Error adding to favorites:", error);
+    }
+  };
 
   const fetchProducts = async (category) => {
     try {
@@ -85,24 +115,76 @@ function Home() {
   useEffect(() => {
     const authToken = Cookies.get("authToken");
     setIsLoggedIn(!!authToken);
-  }, );
+  });
 
-  const toggleFavorite = async (productId) => {
-    if (!isLoggedIn) {
-      console.log("Please log in to add to favorites");
-      return;
-    }
+  const fetchWishlist = async () => {
+    const userToken = Cookies.get("authToken");
     try {
-      const response = await axios.post("http://localhost:3001/favoris", {
-        productId: productId,
-      });
+      const response = await axios.get(
+        "http://localhost:3001/favoris/produit",
+        {
+          headers: { Authorization: "Bearer " + userToken },
+        }
+      );
+      setWishlist(response.data);
       console.log(response.data);
-      // Update UI to indicate that the product is favorited
     } catch (error) {
-      console.error("Error adding to favorites:", error);
+      console.error("Error fetching wishlist:", error);
     }
   };
 
+  useEffect(() => {
+    const authToken = Cookies.get("authToken");
+    setIsLoggedIn(!!authToken);
+
+    if (isLoggedIn) {
+      // Fetch wishlist only if user is logged in
+      fetchWishlist();
+    } else {
+      // Reset wishlist if user is not logged in
+      setWishlist([]);
+    }
+  }, [isLoggedIn]);
+
+  const toggleFavorite = async (productId) => {
+    const userToken = Cookies.get("authToken");
+    try {
+      // Check if the user is logged in
+      if (!isLoggedIn) {
+        console.log("Please log in to add to favorites");
+        return;
+      }
+
+      // Check if the product is already in the wishlist
+      const isProductInWishlist = wishlist.some(
+        (item) => item.productId === productId
+      );
+
+      if (isProductInWishlist) {
+        const favoriteItem = wishlist.find(
+          (item) => item.productId === productId
+        );
+        if (favoriteItem) {
+          await axios.delete(
+            `http://localhost:3001/favoris/${favoriteItem.favorite_id}`,
+            {
+              headers: { Authorization: "Bearer " + userToken },
+            }
+          );
+          // Remove the product from the wishlist
+          setWishlist((prev) =>
+            prev.filter((item) => item.productId !== productId)
+          );
+        }
+      } else {
+        // If the product is not in the wishlist, add it
+        setSelectedProduct(productId); // Set the selected product for setting the price
+        setIsModalOpen(true); // Open the popout modal
+      }
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
+    }
+  };
   // Handle checkbox changes for websites
   const handleCheckboxChange = (websiteId) => {
     setSelectedWebsites((prevSelected) =>
@@ -112,8 +194,6 @@ function Home() {
     );
   };
 
-  // Handle checkbox changes for sexes
-  // Handle checkbox changes for sexes
   const handleSexeChange = (sexe) => {
     let sectionName = "";
     // Déterminez la valeur correspondante de la sectionName en fonction de l'option sélectionnée
@@ -160,7 +240,6 @@ function Home() {
   // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
- 
   return (
     <div className="h-screen flex flex-col">
       <div
@@ -350,7 +429,6 @@ function Home() {
           </div>
         </div>
         <div className="flex items-center justify-center m-4">
-          
           <div className="hidden lg:flex pr-4">
             <h1 className="text-gray-500">
               Affichage de 1–20 sur {filteredProducts.length} résultats
@@ -521,6 +599,37 @@ function Home() {
             </div>
           </div>
           <div className="m-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 ">
+            {isModalOpen && (
+              <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50 z-50">
+                <div className="bg-white p-8 rounded-md">
+                  <h2 className="text-gray-800 text-lg font-semibold mb-4">
+                    Set the price for the product
+                  </h2>
+                  {/* Input field for setting the price */}
+                  <input
+                    type="number"
+                    placeholder="Enter price..."
+                    className="border border-gray-300 px-3 py-2 rounded-md w-full mb-4"
+                    value={pricef}
+                    onChange={(e) => setPrice(e.target.value)}
+                  />
+
+                  <button
+                    className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                    onClick={savePriceAndAddToWishlist} // Call the save function onClick
+                  >
+                    Save
+                  </button>
+                  {/* Cancel button */}
+                  <button
+                    className="text-gray-600 px-4 py-2 rounded-md ml-4 hover:text-gray-800"
+                    onClick={() => setIsModalOpen(false)}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
             {currentProducts &&
               currentProducts.map((prd) => (
                 <div key={prd.product_id} className="">
@@ -544,7 +653,13 @@ function Home() {
                       <h1 className="text-[14px]">{prd.price} DA</h1>
                       <button onClick={() => toggleFavorite(prd.product_id)}>
                         <MdOutlineFavorite
-                          color={prd.isFavorite ? "red" : "gray"}
+                          color={
+                            wishlist.some(
+                              (item) => item.productId === prd.product_id
+                            )
+                              ? "red"
+                              : "gray"
+                          }
                           size={24}
                         />
                       </button>

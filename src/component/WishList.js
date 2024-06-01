@@ -31,7 +31,7 @@ function WishList() {
 
   const handleEditClick = (product) => {
     setCurrentProduct(product);
-    setNewPriceThreshold(product.priceThreshold || "");
+    setNewPriceThreshold(product.pricef || "");
     setIsEditing(true);
   };
 
@@ -43,13 +43,31 @@ function WishList() {
 
   const handleSaveClick = () => {
     if (newPriceThreshold > 0) {
-      console.log(
-        `New price threshold for product ${currentProduct.product_id}: ${newPriceThreshold}`
-      );
-      // Here you can add the code to save the new price threshold to the server
-      setIsEditing(false);
-      setCurrentProduct(null);
-      setNewPriceThreshold("");
+      console.log(currentProduct.favorite_id);
+      const userToken = Cookies.get("authToken");
+      axios
+        .put(
+          `http://localhost:3001/favoris/${currentProduct.favorite_id}`,
+          { pricef: newPriceThreshold },
+          {
+            headers: { Authorization: "Bearer " + userToken },
+          }
+        )
+        .then((response) => {
+          setData(
+            data.map((prd) =>
+              prd.favorite_id === currentProduct.favorite_id
+                ? { ...prd, pricef: newPriceThreshold }
+                : prd
+            )
+          );
+          setIsEditing(false);
+          setCurrentProduct(null);
+          setNewPriceThreshold("");
+        })
+        .catch((error) => {
+          console.error("Error updating product:", error);
+        });
     } else {
       alert("Please enter a valid price greater than 0");
     }
@@ -57,7 +75,7 @@ function WishList() {
 
   const handleDeleteClick = (favoriteId) => {
     const userToken = Cookies.get("authToken");
-    console.log(favoriteId)
+    console.log(favoriteId);
     axios
       .delete(`http://localhost:3001/favoris/${favoriteId}`, {
         headers: { Authorization: "Bearer " + userToken },
